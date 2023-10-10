@@ -1,7 +1,6 @@
 package api
 
 import (
-	"APIgateway/pcg/types"
 	"bytes"
 	"encoding/json"
 	"fmt"
@@ -10,7 +9,13 @@ import (
 )
 
 // VerificationServiceURL представляет URL вашего сервиса верификации.
-var VerificationServiceURL = "http://localhost:8081" // Замените на фактический URL
+var VerificationServiceURL = "http://localhost:8081"
+
+var VerificationResult struct {
+	UniqueID string `json:"uniqueID"`
+	Message  string `json:"message"`
+	Error    string `json:"error"`
+}
 
 // VerifyComment отправляет запрос на верификацию комментария в сервис верификации.
 func VerifyComment(commentText, uniqueID string) (string, error) {
@@ -22,16 +27,16 @@ func VerifyComment(commentText, uniqueID string) (string, error) {
 
 	verificationResponseData, err := ioutil.ReadAll(verificationResponse.Body)
 	if err != nil {
-		return "var1", err
+		return "", err
 	}
 
-	if err := json.Unmarshal(verificationResponseData, &types.VerificationResult); err != nil {
-		return "var2", err
+	if err := json.Unmarshal(verificationResponseData, &VerificationResult); err != nil {
+		return "", err
 	}
 
-	if types.VerificationResult.Error != "" {
-		return "var3", fmt.Errorf(types.VerificationResult.Error)
+	if VerificationResult.Error != "" {
+		return "", fmt.Errorf(VerificationResult.Error)
 	}
 
-	return types.VerificationResult.Message, nil
+	return VerificationResult.Message, nil
 }

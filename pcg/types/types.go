@@ -15,19 +15,13 @@ type NewsFullDetailed struct {
 }
 
 type Comment struct {
-	ID              int    `json:"id"`
 	NewsID          int    `json:"news_id"`
-	Text            string `json:"text"`
+	CommentText     string `json:"commentText"`
 	ParentCommentID int    `json:"parent_id"`
+	UniqueID        string `json:"uniqueID"`
 }
 
 type AggregatorResponse struct {
 	News   NewsShortDetailed
 	Errors []error
-}
-
-var VerificationResult struct {
-	UniqueID string `json:"uniqueID"`
-	Message  string `json:"message"`
-	Error    string `json:"error"`
 }
