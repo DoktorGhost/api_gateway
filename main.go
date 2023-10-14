@@ -31,6 +31,7 @@ func main() {
 
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			fmt.Println("Комменатрий не прошел цензурирование!")
 			log.Printf("Timestamp: %s, Request ID: %s, IP: %s, HTTP Code: %d", time.Now().Format("2006-01-02 15:04:05"), request.UniqueID, c.ClientIP(), http.StatusBadRequest)
 			return
 		}
@@ -62,6 +63,7 @@ func main() {
 
 		if err != nil {
 			c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+			fmt.Println("Не существует комменатрия с ID:", commentIDInt)
 			log.Printf("Timestamp: %s, Request ID: %s, IP: %s, HTTP Code: %d", time.Now().Format("2006-01-02 15:04:05"), request.UniqueID, c.ClientIP(), http.StatusNotFound)
 			return
 		}
@@ -115,5 +117,95 @@ func main() {
 		log.Printf("Timestamp: %s, Request ID: %s, IP: %s, HTTP Code: %d", time.Now().Format("2006-01-02 15:04:05"), uniqueID, c.ClientIP(), http.StatusOK)
 	})
 
+	router.GET("/news/:n", func(c *gin.Context) {
+		n := c.Param("n")
+
+		amount, err := strconv.Atoi(n)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid amount"})
+			return
+		}
+
+		uniqueID := xid.New().String()
+		posts, err := api.GetLatestPosts(amount, uniqueID)
+
+		if err != nil {
+			c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+			log.Printf("Timestamp: %s, Request ID: %s, IP: %s, HTTP Code: %d", time.Now().Format("2006-01-02 15:04:05"), uniqueID, c.ClientIP(), http.StatusNotFound)
+			return
+		}
+
+		c.JSON(http.StatusOK, posts)
+		log.Printf("Timestamp: %s, Request ID: %s, IP: %s, HTTP Code: %d", time.Now().Format("2006-01-02 15:04:05"), uniqueID, c.ClientIP(), http.StatusOK)
+	})
+
+	router.GET("/news/:n/:page", func(c *gin.Context) {
+		n := c.Param("n")
+		pageStr := c.Param("page")
+
+		amount, err := strconv.Atoi(n)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid amount"})
+			return
+		}
+
+		page, err := strconv.Atoi(pageStr)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid page"})
+			return
+		}
+
+		uniqueID := xid.New().String()
+		posts, err := api.GetAllposts(amount, page, uniqueID)
+
+		if err != nil {
+			c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+			log.Printf("Timestamp: %s, Request ID: %s, IP: %s, HTTP Code: %d", time.Now().Format("2006-01-02 15:04:05"), uniqueID, c.ClientIP(), http.StatusNotFound)
+			return
+		}
+
+		c.JSON(http.StatusOK, posts)
+		log.Printf("Timestamp: %s, Request ID: %s, IP: %s, HTTP Code: %d", time.Now().Format("2006-01-02 15:04:05"), uniqueID, c.ClientIP(), http.StatusOK)
+	})
+
+	router.GET("/search/:str", func(c *gin.Context) {
+		search := c.Param("str")
+
+		uniqueID := xid.New().String()
+		posts, err := api.SearchPosts(search, uniqueID)
+
+		if err != nil {
+			c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+			log.Printf("Timestamp: %s, Request ID: %s, IP: %s, HTTP Code: %d", time.Now().Format("2006-01-02 15:04:05"), uniqueID, c.ClientIP(), http.StatusNotFound)
+			return
+		}
+
+		c.JSON(http.StatusOK, posts)
+		log.Printf("Timestamp: %s, Request ID: %s, IP: %s, HTTP Code: %d", time.Now().Format("2006-01-02 15:04:05"), uniqueID, c.ClientIP(), http.StatusOK)
+	})
+
+	router.GET("/id/:id", func(c *gin.Context) {
+		idStr := c.Param("id")
+
+		id, err := strconv.Atoi(idStr)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid id"})
+			return
+		}
+
+		uniqueID := xid.New().String()
+		posts, err := api.GetPostById(id, uniqueID)
+
+		if err != nil {
+			c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+			log.Printf("Timestamp: %s, Request ID: %s, IP: %s, HTTP Code: %d", time.Now().Format("2006-01-02 15:04:05"), uniqueID, c.ClientIP(), http.StatusNotFound)
+			return
+		}
+
+		c.JSON(http.StatusOK, posts)
+		log.Printf("Timestamp: %s, Request ID: %s, IP: %s, HTTP Code: %d", time.Now().Format("2006-01-02 15:04:05"), uniqueID, c.ClientIP(), http.StatusOK)
+	})
+
 	router.Run(":8080")
+
 }

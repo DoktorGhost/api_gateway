@@ -6,9 +6,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-)
 
-var CommentServiceURL = "http://localhost:8082" // Замените на фактический URL вашего сервиса комментариев
+	"APIgateway/pcg/consts"
+)
 
 // AddComment отправляет комментарий в сервис комментариев.
 func AddComment(newsId, parentCommentId int, commentText, uniqueID string) error {
@@ -24,7 +24,7 @@ func AddComment(newsId, parentCommentId int, commentText, uniqueID string) error
 		return err
 	}
 
-	response, err := http.Post(CommentServiceURL+"/create-comment", "application/json", bytes.NewBuffer(requestBody))
+	response, err := http.Post(consts.CommentServiceURL+"/create-comment", "application/json", bytes.NewBuffer(requestBody))
 	if err != nil {
 		return err
 	}
@@ -48,7 +48,7 @@ func DeleteComment(commentID int, uniqueID string) error {
 		return err
 	}
 
-	response, err := http.Post(CommentServiceURL+"/del-comment", "application/json", bytes.NewBuffer(requestBody))
+	response, err := http.Post(consts.CommentServiceURL+"/del-comment", "application/json", bytes.NewBuffer(requestBody))
 	if err != nil {
 		return err
 	}
@@ -73,7 +73,7 @@ func GetComment(commentID int, uniqueID string) (types.Comment, error) {
 		return types.Comment{}, err
 	}
 
-	response, err := http.Post(CommentServiceURL+"/get-comment", "application/json", bytes.NewBuffer(requestBody))
+	response, err := http.Post(consts.CommentServiceURL+"/get-comment", "application/json", bytes.NewBuffer(requestBody))
 	if err != nil {
 		return types.Comment{}, err
 	}
@@ -101,7 +101,7 @@ func GetCommentsByNewsID(newsID int, uniqueID string) ([]types.Comment, error) {
 		return nil, err
 	}
 
-	response, err := http.Post(CommentServiceURL+"/get-comments", "application/json", bytes.NewBuffer(requestBody))
+	response, err := http.Post(consts.CommentServiceURL+"/get-comments", "application/json", bytes.NewBuffer(requestBody))
 	if err != nil {
 		return nil, err
 	}

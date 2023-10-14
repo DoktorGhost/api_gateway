@@ -1,15 +1,13 @@
 package api
 
 import (
+	"APIgateway/pcg/consts"
 	"bytes"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
 )
-
-// VerificationServiceURL представляет URL вашего сервиса верификации.
-var VerificationServiceURL = "http://localhost:8081"
 
 var VerificationResult struct {
 	UniqueID string `json:"uniqueID"`
@@ -20,7 +18,7 @@ var VerificationResult struct {
 // VerifyComment отправляет запрос на верификацию комментария в сервис верификации.
 func VerifyComment(commentText, uniqueID string) (string, error) {
 	verificationRequestBody := []byte(fmt.Sprintf(`{"commentText":"%s", "uniqueID":"%s"}`, commentText, uniqueID))
-	verificationResponse, err := http.Post(VerificationServiceURL+"/verify", "application/json", bytes.NewBuffer(verificationRequestBody))
+	verificationResponse, err := http.Post(consts.VerificationServiceURL+"/verify", "application/json", bytes.NewBuffer(verificationRequestBody))
 	if err != nil {
 		return "", err
 	}

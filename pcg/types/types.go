@@ -27,9 +27,28 @@ type Request struct {
 	CommentText     string `json:"commentText"`
 	ParentCommentID int    `json:"parent_id"`
 	UniqueID        string `json:"uniqueID"`
+	Amount          int    `json:"Amount"`
 }
 
-type AggregatorResponse struct {
-	News   NewsShortDetailed
-	Errors []error
+type Pagination struct {
+	Page       int
+	PageSize   int
+	TotalPages int
+	TotalItems int
+}
+
+type PaginatedPosts struct {
+	Posts      []NewsShortDetailed
+	Pagination Pagination
+}
+
+type PostDetails struct {
+	News     NewsFullDetailed
+	Comments []Comment
+	Err      error
+}
+
+type ResultPost struct {
+	News     NewsFullDetailed
+	Comments []Comment
 }
